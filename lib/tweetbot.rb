@@ -5,6 +5,8 @@ class TweetBot
   include TweetBotTalk
   attr_accessor :response_frequency
 
+  DefaultFrequency = 20
+
   def self.configure
     @bot ||= new
     yield @bot if block_given?
@@ -12,7 +14,7 @@ class TweetBot
   end
 
   def initialize()
-    self.response_frequency = 20
+    self.response_frequency = DefaultFrequency
     @responses_for_phrases = Hash.new { |hash, key| hash[key] = [] }
   end
 
