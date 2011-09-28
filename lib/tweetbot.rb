@@ -6,9 +6,9 @@ class TweetBot
   attr_accessor :response_frequency
 
   def self.configure
-    bot = new
-    yield bot if block_given?
-    bot
+    @bot ||= new
+    yield @bot if block_given?
+    @bot
   end
 
   def initialize()
