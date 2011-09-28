@@ -1,8 +1,8 @@
 require_relative '../lib/tweetbot'
 
 
-describe TweetBot do
-  let(:bot) { TweetBot.new }
+describe TweetBot::Bot do
+  let(:bot) { TweetBot::Bot.new }
   let(:tweet) { stub(:text => "hello world", :user => stub(:screen_name => "fun_person")) }
 
   before do
