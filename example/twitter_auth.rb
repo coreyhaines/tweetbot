@@ -6,7 +6,7 @@ module TwitterAuth
   end
   AuthKeys = {
     consumer_key: "key",
-    consumer_key_secret: "secret",
+    consumer_secret: "secret",
     oauth_token: "token",
     oauth_token_secret: "token_secret"
   }
