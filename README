@@ -1,0 +1,39 @@
+So you want to write a twitter bot. Use my gem. Then, you can just do this:
+
+load 'twitter_auth.rb'
+require 'tweetbot'
+
+bot = TweetBot.configure do |config|
+  config.response_frequency = 100
+
+  config.respond_to_phrase "tweetbot example phrase" do |responses|
+    responses << "I am tweetbot!" << "You rang?" << "Pretty cool, thanks for saying hello"
+  end
+
+  config.respond_to_phrase "hey @tweetbot" do |responses|
+    responses << "Hey back at ya" << "You rang again?"
+  end
+
+  config.twitter_auth = TwitterAuth::AuthKeys
+end
+
+bot.talk
+
+and build a file called twitter_auth.rb that has your keys
+
+module TwitterAuth
+  MyName = 'twitter_name'
+  ApigeeEnpoint = nil
+  def self.use_apigee?
+    !ApigeeEnpoint.nil?
+  end
+  AuthKeys = {
+    consumer_key: "key",
+    consumer_secret: "secret",
+    oauth_token: "token",
+    oauth_token_secret: "token_secret"
+  }
+end
+
+
+Abstracting out the apigee stuff, don't worry. Just leave it like that for now.
