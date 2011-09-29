@@ -25,6 +25,7 @@ module TweetBot
         config.consumer_secret = twitter_auth[:consumer_secret]
         config.oauth_token = twitter_auth[:oauth_token]
         config.oauth_token_secret = twitter_auth[:oauth_token_secret]
+        config.auth_method = :oauth
       end
     end
 
