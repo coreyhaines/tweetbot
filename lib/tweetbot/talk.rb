@@ -1,5 +1,6 @@
 require 'twitter'
 require 'tweetstream'
+
 if ENV["DEBUG"]
   module Twitter
     def self.configure
@@ -28,8 +29,7 @@ module TweetBot
     end
 
     def talk
-      load 'twitter_auth.rb'
-
+      configure_twitter_auth
 
       if TwitterAuth.use_apigee?
         twitter_api_endpoint = if ENV['APIGEE_TWITTER_API_ENDPOINT']
@@ -48,22 +48,7 @@ module TweetBot
 
       bot = self
 
-      puts "Waking up to greet the world... #{Time.now}"
-      begin
-        Twitter.update "Waking up to greet the world... #{Time.now}"
-      rescue Twitter::Forbidden => ex
-        puts "Twitter Forbidden Error while waking up"
-        puts ex
-        puts "Continuing"
-      rescue Twitter::Error => ex
-        puts "Twitter Error while waking up"
-        puts ex
-        exit!(1)
-      rescue => ex
-        puts "Unknown Error while waking up"
-        puts ex
-        exit!(1)
-      end
+      announce_wake_up
       puts "Listening... #{Time.now}"
 
 
@@ -80,7 +65,7 @@ module TweetBot
       at_exit do
         puts "Shutting down... #{Time.now}"
         begin
-          Twitter.update "Going to sleep... #{Time.now}"
+          send_twitter_message "Going to sleep... #{Time.now}"
         rescue
         end
       end
@@ -99,9 +84,9 @@ module TweetBot
         else
           puts "#{Time.now} #{status.user.screen_name} said #{status.text}"
           if bot.should_i_respond_to?(status)
+            response = bot.response_for(status)
             begin
-              response = bot.response_for(status)
-              Twitter.update "#{response}", :in_reply_to_status_id => status.id
+              send_twitter_message(response, :in_reply_to_status_id => status.id)
             rescue Exception => e
               puts "Exception while sending the reply"
               puts e
@@ -111,6 +96,27 @@ module TweetBot
           end
         end
       end
+    end
+
+    def send_twitter_message(message, options = {})
+      Twitter.update message, options
+    end
+
+    def announce_wake_up
+      puts "Waking up to greet the world... #{Time.now}"
+      send_twitter_message "Waking up to greet the world... #{Time.now}"
+    rescue Twitter::Forbidden => ex
+      puts "Twitter Forbidden Error while waking up"
+      puts ex
+      puts "Continuing"
+    rescue Twitter::Error => ex
+      puts "Twitter Error while waking up"
+      puts ex
+      exit!(1)
+    rescue => ex
+      puts "Unknown Error while waking up"
+      puts ex
+      exit!(1)
     end
   end
 end
