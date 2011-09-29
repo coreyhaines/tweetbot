@@ -1,7 +1,7 @@
 module TweetBot
   class Bot
     include TweetBot::Talk
-    attr_accessor :response_frequency
+    attr_accessor :response_frequency, :twitter_auth
 
     DefaultFrequency = 20
 

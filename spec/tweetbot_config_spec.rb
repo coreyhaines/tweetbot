@@ -1,6 +1,56 @@
 require_relative '../lib/tweetbot'
+module Twitter
+end
+module TweetStream
+end
 
 describe "configuring tweetbot with a config block" do
+  class DummyAuth
+    attr_accessor :consumer_key, :consumer_secret, :oauth_token,
+                :oauth_token_secret, :auth_method
+  end
+
+  before do
+    Twitter.stub(:configure)
+    TweetStream.stub(:configure)
+  end
+
+  context "configuring with twitter authentication" do
+    it "configures twitter with the oauth keys" do
+      auth = DummyAuth.new
+      bot = TweetBot.configure do |bot|
+        bot.twitter_auth = {
+          consumer_key: "ckey",
+          consumer_secret: "csecret",
+          oauth_token: "token",
+          oauth_token_secret: "tokensecret"
+        }
+      end
+      Twitter.stub(:configure).and_yield auth
+      bot.configure_twitter_auth
+      auth.consumer_key.should == "ckey"
+      auth.consumer_secret.should == "csecret"
+      auth.oauth_token.should == "token"
+      auth.oauth_token_secret.should == "tokensecret"
+    end
+    it "configures tweetstream with the oauth keys" do
+      auth = DummyAuth.new
+      bot = TweetBot.configure do |bot|
+        bot.twitter_auth = {
+          consumer_key: "ckey",
+          consumer_secret: "csecret",
+          oauth_token: "token",
+          oauth_token_secret: "tokensecret"
+        }
+      end
+      TweetStream.stub(:configure).and_yield auth
+      bot.configure_twitter_auth
+      auth.consumer_key.should == "ckey"
+      auth.consumer_secret.should == "csecret"
+      auth.oauth_token.should == "token"
+      auth.oauth_token_secret.should == "tokensecret"
+    end
+  end
 
   context "configuring twice" do
     it "uses the same bot" do

@@ -1,3 +1,5 @@
+require 'twitter'
+require 'tweetstream'
 if ENV["DEBUG"]
   module Twitter
     def self.configure
@@ -10,25 +12,24 @@ if ENV["DEBUG"]
 end
 module TweetBot
   module Talk
+    def configure_twitter_auth
+      Twitter.configure do |config|
+        config.consumer_key = twitter_auth[:consumer_key]
+        config.consumer_secret = twitter_auth[:consumer_secret]
+        config.oauth_token = twitter_auth[:oauth_token]
+        config.oauth_token_secret = twitter_auth[:oauth_token_secret]
+      end
+      TweetStream.configure do |config|
+        config.consumer_key = twitter_auth[:consumer_key]
+        config.consumer_secret = twitter_auth[:consumer_secret]
+        config.oauth_token = twitter_auth[:oauth_token]
+        config.oauth_token_secret = twitter_auth[:oauth_token_secret]
+      end
+    end
+
     def talk
-      require 'twitter'
-      require 'tweetstream'
       load 'twitter_auth.rb'
 
-
-      TweetStream.configure do |config|
-        config.consumer_key = ConsumerKey
-        config.consumer_secret = ConsumerSecret
-        config.oauth_token = OAuthToken
-        config.oauth_token_secret = OAuthTokenSecret
-        config.auth_method = :oauth
-      end
-      Twitter.configure do |config|
-        config.consumer_key = ConsumerKey
-        config.consumer_secret = ConsumerSecret
-        config.oauth_token = OAuthToken
-        config.oauth_token_secret = OAuthTokenSecret
-      end
 
       if TwitterAuth.use_apigee?
         twitter_api_endpoint = if ENV['APIGEE_TWITTER_API_ENDPOINT']
@@ -90,6 +91,8 @@ module TweetBot
         puts message
       end
 
+      #EM.defer
+      #EM::HttpRequest
       client.track(*bot.phrases_to_search) do |status|
         if status.user.screen_name == TwitterAuth::MyName
           puts "#{Time.now} Caught myself saying it"
