@@ -1,4 +1,5 @@
 require_relative '../lib/tweetbot'
+require 'timecop'
 
 
 describe TweetBot::Bot do
@@ -8,6 +9,11 @@ describe TweetBot::Bot do
   before do
     bot.add_responses_for_phrase "hello world", "and hello to you"
   end
+
+  after do
+    Timecop.return
+  end
+
 
   describe "#phrases_to_search" do
     it "returns the phrases that have responses associated with them" do
@@ -86,6 +92,29 @@ describe TweetBot::Bot do
       bot.stub(:rand) { 1 }
       bot.stub(:tweet_matches?) { true }
     end
+
+    context "Under rate limit" do
+      let(:now) { Time.now }
+      let(:status) { stub }
+      before do
+        Timecop.freeze(now)
+        bot.rate_limited!
+      end
+
+      it "won't allow response for 1 hour" do
+        bot.should_i_respond_to?(status).should be_false
+        Timecop.travel(now + 60 * 59) do
+          bot.should_i_respond_to?(status).should be_false
+        end
+      end
+
+      it "will allow response after an hour" do
+        Timecop.travel(now + 3600) do
+          bot.should_i_respond_to?(status).should be_true
+        end
+      end
+    end
+
     it "only responds if rand is less than response_frequency" do
       bot.response_frequency = 30
       bot.stub(:rand) { 29 }

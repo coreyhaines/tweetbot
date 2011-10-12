@@ -30,9 +30,18 @@ module TweetBot
     end
 
     def should_i_respond_to?(tweet)
+      return false if under_rate_limit_pause?
       matches = tweet_matches?(tweet)
       frequency_check = (rand(100) < self.response_frequency)
       matches && frequency_check
+    end
+
+    def rate_limited!
+      @rate_limited_until = Time.now + 3600
+    end
+
+    def under_rate_limit_pause?
+      @rate_limited_until && (Time.now < @rate_limited_until)
     end
 
     def tweet_matches?(tweet)

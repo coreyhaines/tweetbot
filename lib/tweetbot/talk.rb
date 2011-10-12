@@ -88,6 +88,9 @@ module TweetBot
             response = bot.response_for(status)
             begin
               send_twitter_message(response, :in_reply_to_status_id => status.id)
+            rescue Twitter::Forbidden => ex
+              puts "Rate limited!"
+              bot.rate_limited!
             rescue Exception => e
               puts "Exception while sending the reply"
               puts e
