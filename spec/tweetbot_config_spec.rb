@@ -89,12 +89,7 @@ describe "configuring tweetbot with a config block" do
     end
 
     it "saves the response given in block" do
-      bot.stub(:rand) { 0 }
-      response = bot.response_for(stub(:text => "code and coffee", :user => stub.as_null_object))
-      response.should =~ /good times$/
-      bot.stub(:rand) { 1 }
-      response = bot.response_for(stub(:text => "code and coffee", :user => stub.as_null_object))
-      response.should =~ /bad times$/
+      bot.responses_for("code and coffee").should =~ ["good times", "bad times"]
     end
   end
 

@@ -14,6 +14,10 @@ module TweetBot
       @responses_for_phrases.keys
     end
 
+    def responses_for(phrase)
+      @responses_for_phrases[phrase]
+    end
+
     def respond_to_phrase(phrase)
       responses = []
       yield responses
@@ -26,7 +30,7 @@ module TweetBot
 
     def response_for(tweet)
       responses = responses_for_tweet(tweet)
-      "@#{tweet.user.screen_name} #{responses[rand(responses.length)]}"
+      "@#{tweet.user.screen_name} #{responses.sample}"
     end
 
     def should_i_respond_to?(tweet)

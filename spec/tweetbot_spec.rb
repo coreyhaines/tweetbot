@@ -62,12 +62,14 @@ describe TweetBot::Bot do
 
     it "it randomly uses a phrase from the responses" do
       tweet.stub(:text) { "good morning" }
-      bot.add_responses_for_phrase("good morning", "response 1")
-      bot.add_responses_for_phrase("good morning", "response 2")
-      bot.stub(:rand) { 0 }
-      bot.response_for(tweet).should =~ /response 1/
-      bot.stub(:rand) { 1 }
-      bot.response_for(tweet).should =~ /response 2/
+      bot.add_responses_for_phrase("good morning", "response 1", "response 2")
+      responses = (1..20).map do
+        bot.response_for(tweet)
+      end
+      responses.reject! {|response| response =~ /response 1/}
+      responses.should_not be_empty
+      responses.reject! {|response| response =~ /response 2/}
+      responses.should be_empty
     end
 
     it "uses responses if phrase appears anywhere in tweet (case-insensitive)" do
@@ -75,16 +77,6 @@ describe TweetBot::Bot do
       tweet.stub(:text) { "this is a Good Afternoon" }
       bot.response_for(tweet).should =~ /afternoon response/
     end
-
-    it "supports adding multiple responses for a phrase in one add_... call" do
-      tweet.stub(:text) { "good day" }
-      bot.add_responses_for_phrase("good day", "and to you", "and again to you")
-      bot.stub(:rand) { 0 }
-      bot.response_for(tweet).should =~ /and to you/
-      bot.stub(:rand) { 1 }
-      bot.response_for(tweet).should =~ /and again to you/
-    end
-
   end
 
   describe "#should_i_respond_to?" do
