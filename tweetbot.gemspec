@@ -22,5 +22,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   s.add_development_dependency "timecop"
   s.add_runtime_dependency "twitter"
-  s.add_runtime_dependency "tweetstream", "1.1.1"
+  s.add_runtime_dependency "tweetstream"
 end
