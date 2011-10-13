@@ -34,13 +34,17 @@ module TweetBot
     end
 
     def should_i_respond_to?(tweet)
-      return false if under_rate_limit_pause?
+      if under_rate_limit_pause?
+        puts "Under rate limit pause. Will let up at #{@rate_limited_until}"
+        return false
+      end
       matches = tweet_matches?(tweet)
       frequency_check = (rand(100) < self.response_frequency)
       matches && frequency_check
     end
 
     def rate_limited!
+      puts "Starting rate limit throttling!"
       @rate_limited_until = Time.now + 3600
     end
 
