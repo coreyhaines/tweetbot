@@ -60,7 +60,7 @@ describe TweetBot::Bot do
       bot.response_for(tweet).should =~ /night response/
     end
 
-    it "it randomly uses a phrase from the responses" do
+    it "uses a random phrase from the responses" do
       tweet.stub(:text) { "good morning" }
       bot.add_responses_for_phrase("good morning", "response 1", "response 2")
       responses = (1..20).map do
