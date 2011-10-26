@@ -80,7 +80,7 @@ module TweetBot
       #EM.defer
       #EM::HttpRequest
       client.track(*bot.phrases_to_search) do |status|
-        if status.user.screen_name == TwitterAuth::MyName
+        if status.user.screen_name.downcase == TwitterAuth::MyName.downcase
           puts "#{Time.now} Caught myself saying it"
         else
           puts "#{Time.now} #{status.user.screen_name} said #{status.text}"
