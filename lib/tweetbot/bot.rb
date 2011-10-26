@@ -35,7 +35,7 @@ module TweetBot
 
     def should_i_respond_to?(tweet)
       if under_rate_limit_pause?
-        puts "Under rate limit pause. Will let up at #{@rate_limited_until}"
+        puts "Under rate limit pause. Will let up at #{@rate_limited_until.to_s}"
         return false
       end
       matches = tweet_matches?(tweet)
