@@ -4,14 +4,25 @@ module TweetBot
     attr_accessor :response_frequency, :twitter_auth
 
     DefaultFrequency = 20
+    Noop = lambda {|status|}
+
 
     def initialize()
       self.response_frequency = DefaultFrequency
       @responses_for_phrases = Hash.new { |hash, key| hash[key] = [] }
+      @blocks_for_phrases = {}
+    end
+
+    def on_status_captured(key, &block)
+      @blocks_for_phrases[key] = block
+    end
+
+    def alert_status_captured(status)
+      find_phrase_value(@blocks_for_phrases, status.text, Noop).call(status)
     end
 
     def phrases_to_search
-      @responses_for_phrases.keys
+      @responses_for_phrases.keys + @blocks_for_phrases.keys
     end
 
     def responses_for(phrase)
@@ -57,7 +68,12 @@ module TweetBot
     end
 
     def responses_for_tweet(tweet)
-      @responses_for_phrases.select{|phrase, _| tweet.text =~ /#{phrase}/i}.values[0] || []
+      find_phrase_value(@responses_for_phrases, tweet.text, [])
     end
+
+    def find_phrase_value(hash, text, default)
+      hash.select { |phrase, _| text =~ /#{phrase.downcase}/i }.values[0] || default
+    end
+
   end
 end

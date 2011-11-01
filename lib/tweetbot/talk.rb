@@ -99,6 +99,7 @@ module TweetBot
           else
             puts "Bot told me not to respond"
           end
+          bot.alert_status_captured(status)
         end
       end
     end

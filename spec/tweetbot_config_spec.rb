@@ -93,6 +93,37 @@ describe "configuring tweetbot with a config block" do
     end
   end
 
+  context "configuring a status captured block" do
+    let(:statuses) { [] }
+    let(:bot) do
+      TweetBot.configure do |bot|
+        bot.on_status_captured "positivember" do |status|
+          statuses << status.text
+        end
+      end
+    end
+
+    it "adds the phrase to the phrases to search" do
+      bot.phrases_to_search.should include("positivember")
+    end
+
+    context "status text contains the phrase" do
+      it "calls the block" do
+        status = stub(text: "Yeah #positivember")
+        bot.alert_status_captured(status)
+        statuses.should include("Yeah #positivember")
+      end
+    end
+
+    context "status text does not contain the phrase" do
+      it "does not call the block" do
+        status = stub(text: "negativity")
+        bot.alert_status_captured(status)
+        statuses.should be_empty
+      end
+    end
+  end
+
   context "without a configure block" do
     it "returns a bot that I can use" do
       bot = TweetBot.configure
