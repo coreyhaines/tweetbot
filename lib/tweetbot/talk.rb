@@ -66,7 +66,7 @@ module TweetBot
       at_exit do
         puts "Shutting down... #{Time.now}"
         begin
-          send_twitter_message "Going to sleep... #{Time.now}"
+          # send_twitter_message "Going to sleep... #{Time.now}"
         rescue
         end
       end
@@ -115,7 +115,7 @@ module TweetBot
 
     def announce_wake_up
       puts "Waking up to greet the world... #{Time.now}"
-      send_twitter_message "Waking up to greet the world... #{Time.now}"
+      # send_twitter_message "Waking up to greet the world... #{Time.now}"
     rescue Twitter::Forbidden => ex
       puts "Twitter Forbidden Error while waking up"
       puts ex
