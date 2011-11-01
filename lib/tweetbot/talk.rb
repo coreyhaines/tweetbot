@@ -92,14 +92,19 @@ module TweetBot
             rescue Twitter::Forbidden => ex
               puts "Rate limited!"
               bot.rate_limited!
-            rescue Exception => e
+            rescue Exception => ex
               puts "Exception while sending the reply"
-              puts e
+              puts ex
             end
           else
             puts "Bot told me not to respond"
           end
-          bot.alert_status_captured(status)
+          begin
+            bot.alert_status_captured(status)
+          rescue => ex
+            puts "Exception while alerting status"
+            puts ex
+          end
         end
       end
     end
