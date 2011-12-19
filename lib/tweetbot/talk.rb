@@ -89,7 +89,7 @@ module TweetBot
             begin
               send_twitter_message(response, :in_reply_to_status_id => status.id)
               puts "Responding"
-            rescue Twitter::Forbidden => ex
+            rescue Twitter::Error::Forbidden => ex
               puts "Rate limited!"
               bot.rate_limited!
             rescue Exception => ex
@@ -116,7 +116,7 @@ module TweetBot
     def announce_wake_up
       puts "Waking up to greet the world... #{Time.now}"
       # send_twitter_message "Waking up to greet the world... #{Time.now}"
-    rescue Twitter::Forbidden => ex
+    rescue Twitter::Error::Forbidden => ex
       puts "Twitter Forbidden Error while waking up"
       puts ex
       puts "Continuing"
