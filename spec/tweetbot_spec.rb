@@ -44,6 +44,40 @@ describe TweetBot::Bot do
     end
   end
 
+  describe "#tweet_matches_filters?" do
+    before do
+      bot.add_reasons_for_filter "the night", "a dark night"
+    end
+    it "looks to see if any phrases match the tweet" do
+      tweet.stub(:text) { "the night" }
+      bot.tweet_matches_filters?(tweet).should be_true
+      tweet.stub(:text) { "the day" }
+      bot.tweet_matches_filters?(tweet).should be_false
+    end
+
+    it "compares case-insensitive" do
+      tweet.stub(:text) { "The Night"}
+      bot.tweet_matches_filters?(tweet).should be_true
+    end
+
+    it "matches if anywhere in text" do
+      tweet.stub(:text) { "It is cold The Night"}
+      bot.tweet_matches_filters?(tweet).should be_true
+    end
+
+  end
+
+  describe "#tweet_matches_filters? regex encodings" do
+    before do
+      bot.add_reasons_for_filter /\@\S+/, "filtering out a user reference"
+    end
+
+    it "matches conversation indicator anywhere in text" do
+      tweet.stub(:text) {"@corey do not fear the night"}
+      bot.tweet_matches_filters?(tweet).should be_true
+    end
+  end
+
   describe "#response_for" do
     it "replies to the user" do
       tweet.user.stub(:screen_name) { "corey" }
@@ -83,6 +117,7 @@ describe TweetBot::Bot do
     before do
       bot.stub(:rand) { 1 }
       bot.stub(:tweet_matches?) { true }
+      bot.stub(:tweet_matches_filters?) { false }
     end
 
     context "Under rate limit" do
@@ -122,6 +157,16 @@ describe TweetBot::Bot do
       bot.should_i_respond_to?(stub).should be_true
       bot.stub(:tweet_matches?) { false }
       bot.should_i_respond_to?(stub).should be_false
+    end
+
+    it "only responds if phrase matches and filter does not" do
+      bot.stub(:tweet_matches?) { true }
+      bot.stub(:tweet_matches_filters?) { false }
+      bot.should_i_respond_to?(stub).should be_true
+      bot.stub(:tweet_matches?) { true }
+      bot.stub(:tweet_matches_filters?) { true }
+      bot.should_i_respond_to?(stub).should be_false
+
     end
   end
 

@@ -93,6 +93,20 @@ describe "configuring tweetbot with a config block" do
     end
   end
 
+  context "configuring filters" do
+    let(:bot) do
+      TweetBot.configure do |bot|
+        bot.filter_out "\@\S" do |filter_reasons|
+          filter_reasons << "filtering out conversations"
+        end
+      end
+    end
+
+    it "has filters for a conversational tweet" do
+      bot.filters_for("\@\S").should =~ ["filtering out conversations"]
+    end
+  end
+
   context "configuring a status captured block" do
     let(:statuses) { [] }
     let(:bot) do
