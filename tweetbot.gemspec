@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Corey Haines"]
   spec.email         = ["coreyhaines@gmail.com"]
 
-  s.summary     = %q{Tweetbot makes writing twitter bots twivial!}
-  s.description = %q{Using tweetbot, you can easily create twitter bots that respond to key phrases that people say on the twitters}
+  spec.summary     = %q{Tweetbot makes writing twitter bots twivial!}
+  spec.description = %q{Using tweetbot, you can easily create twitter bots that respond to key phrases that people say on the twitters}
   spec.homepage      = "https://github.com/coreyhaines/tweetbot"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
@@ -23,4 +23,6 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+  spec.add_runtime_dependency "twitter"
 end
