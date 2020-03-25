@@ -1,5 +1,4 @@
 require 'twitter'
-#require 'tweetstream'
 
 if ENV["DEBUG"]
   module Twitter
@@ -13,52 +12,35 @@ if ENV["DEBUG"]
 end
 module TweetBot
   module Talk
-    def configure_twitter_auth
-      Twitter.configure do |config|
+    def configure_streaming_twitter
+      Twitter::Streaming::Client.new do |config|
         config.consumer_key = twitter_auth[:consumer_key]
         config.consumer_secret = twitter_auth[:consumer_secret]
-        config.oauth_token = twitter_auth[:oauth_token]
-        config.oauth_token_secret = twitter_auth[:oauth_token_secret]
+        config.access_token = twitter_auth[:access_token]
+        config.access_token_secret = twitter_auth[:access_token_secret]
       end
-      #TweetStream.configure do |config|
-        #config.consumer_key = twitter_auth[:consumer_key]
-        #config.consumer_secret = twitter_auth[:consumer_secret]
-        #config.oauth_token = twitter_auth[:oauth_token]
-        #config.oauth_token_secret = twitter_auth[:oauth_token_secret]
-        #config.auth_method = :oauth
-      #end
+    end
+
+    def configure_rest_twitter_client
+      Twitter::REST::Client.new do |config|
+        config.consumer_key = twitter_auth[:consumer_key]
+        config.consumer_secret = twitter_auth[:consumer_secret]
+        config.access_token = twitter_auth[:access_token]
+        config.access_token_secret = twitter_auth[:access_token_secret]
+      end
     end
 
     def talk
-      configure_twitter_auth
-
-      if TwitterAuth.use_apigee?
-        twitter_api_endpoint = if ENV['APIGEE_TWITTER_API_ENDPOINT']
-                                 ENV['APIGEE_TWITTER_API_ENDPOINT']
-                               else
-                                 # Get this value from Heroku.
-                                 # Once you have enabled the addon, boot up the 'heroku console' and run the following:
-                                 # puts ENV['APIGEE_TWITTER_API_ENDPOINT']
-                                 # this will spit out your correct api endpoint
-                                 TwitterAuth::ApigeeEnpoint
-                               end
-        Twitter.configure do |config|
-          config.gateway = twitter_api_endpoint
-        end
-      end
+      client = configure_streaming_twitter
 
       bot = self
 
       announce_wake_up
       puts "Listening... #{Time.now}"
 
-
-      client = TweetStream::Client.new
-
-      ["INT", "TERM", "STOP"].each do |signal|
+      ["INT", "TERM"].each do |signal|
         trap(signal) do
           puts "Got #{signal}"
-          client.stop
           exit!(1)
         end
       end
@@ -72,17 +54,12 @@ module TweetBot
       end
 
 
-      client.on_error do |message|
-        puts "Error: #{Time.now}"
-        puts message
-      end
 
-      #EM.defer
-      #EM::HttpRequest
-      client.track(*bot.phrases_to_search) do |status|
-        if status.user.screen_name.downcase == TwitterAuth::MyName.downcase
-          puts "#{Time.now} Caught myself saying it"
-        else
+      client.filter(track: bot.phrases_to_search.join(",")) do |status|
+        puts status.text if status.is_a?(Twitter::Tweet)
+        #if status.user.screen_name.downcase == TwitterAuth::MyName.downcase
+          #puts "#{Time.now} Caught myself saying it"
+        #else
           puts "#{Time.now} #{status.user.screen_name} said #{status.text}"
           if bot.should_i_respond_to?(status)
             response = bot.response_for(status)
@@ -105,12 +82,13 @@ module TweetBot
             puts "Exception while alerting status"
             puts ex
           end
-        end
+        #end
       end
     end
 
     def send_twitter_message(message, options = {})
-      Twitter.update message, options
+      client = configure_rest_twitter_client
+      client.update message, options
     end
 
     def announce_wake_up

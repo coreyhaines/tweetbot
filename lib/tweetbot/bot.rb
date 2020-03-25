@@ -50,8 +50,16 @@ module TweetBot
         return false
       end
       matches = tweet_matches?(tweet)
+      unless matches
+        puts "Tweet does not match"
+        return false
+      end
       frequency_check = (rand(100) < self.response_frequency)
-      matches && frequency_check
+      unless frequency_check
+        puts "Frequency check failed"
+        return false
+      end
+      true
     end
 
     def rate_limited!
