@@ -57,9 +57,9 @@ module TweetBot
 
       client.filter(track: bot.phrases_to_search.join(",")) do |status|
         puts status.text if status.is_a?(Twitter::Tweet)
-        #if status.user.screen_name.downcase == TwitterAuth::MyName.downcase
-          #puts "#{Time.now} Caught myself saying it"
-        #else
+        if status.user.screen_name.downcase == TwitterAuth::MyName.downcase
+          puts "#{Time.now} Caught myself saying it"
+        else
           puts "#{Time.now} #{status.user.screen_name} said #{status.text}"
           if bot.should_i_respond_to?(status)
             response = bot.response_for(status)
@@ -82,7 +82,7 @@ module TweetBot
             puts "Exception while alerting status"
             puts ex
           end
-        #end
+        end
       end
     end
 
