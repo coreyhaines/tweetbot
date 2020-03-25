@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description = %q{Using tweetbot, you can easily create twitter bots that respond to key phrases that people say on the twitters}
   spec.homepage      = "https://github.com/coreyhaines/tweetbot"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/coreyhaines/tweetbot"
