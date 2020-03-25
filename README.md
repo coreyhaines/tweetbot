@@ -28,10 +28,6 @@ and build a file called twitter_auth.rb that has your keys
 ```
 module TwitterAuth
   MyName = 'twitter_name'
-  ApigeeEnpoint = nil
-  def self.use_apigee?
-    !ApigeeEnpoint.nil?
-  end
   AuthKeys = {
     consumer_key: "key",
     consumer_secret: "secret",
@@ -87,10 +83,6 @@ and build a file called twitter_auth.rb that has your keys
 ```
 module TwitterAuth
   MyName = 'twitter_name'
-  ApigeeEnpoint = nil
-  def self.use_apigee?
-    !ApigeeEnpoint.nil?
-  end
   AuthKeys = {
     consumer_key: "key",
     consumer_secret: "secret",
